@@ -1,3 +1,4 @@
+import Contacts from "@/Components/Contacts";
 import ElevatedCards from "@/Components/ElevatedCards";
 import FlatCards from "@/Components/FlatCards";
 import TrandingPlacesCard from "@/Components/TrandingPlacesCard";
@@ -11,6 +12,7 @@ export default function Index() {
         <FlatCards />
         <ElevatedCards />
         <TrandingPlacesCard />
+        <Contacts />
       </SafeAreaView>
 
     </ScrollView>
