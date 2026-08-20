@@ -1,16 +1,12 @@
-const express = require("express");
+import express from "express"
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.js";
 
+ const app = express()
 
-const app = express();
+app.all('/api/auth/{*any}', toNodeHandler(auth));
+// Mount express json middleware after Better Auth handler
+// or only apply it to routes that don't interact with Better Auth
+app.use(express.json());
 
-
-
-
-
-app.get("/health-check",(req,res) => {
-    res.status(200).json({
-        message:"hellow from Server"
-    })
-})
-
-module.exports = app;
+export {app}
