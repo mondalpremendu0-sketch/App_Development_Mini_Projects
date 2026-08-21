@@ -15,16 +15,12 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/hooks/useAuthContext";
 
-
-
-
-
 export default function SignIn() {
-  const { handleSignIn, loading } = useAuth();
+  const { handleSignIn, loading, error, setError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [apperror, setappError] = useState("");
 
   const handleLogin = async () => {
     const normalizedEmail = email.trim();
@@ -36,17 +32,19 @@ export default function SignIn() {
       setError("Enter a valid email address.");
       return;
     }
-    setError("");
+    setappError("");
     const success = await handleSignIn(normalizedEmail, password);
     if (success) router.replace("/(tabs)");
     else
-      setError("We could not sign you in. Check your details and try again.");
+      setappError(
+        "We could not sign you in. Check your details and try again.",
+      );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
         <ScrollView
@@ -71,7 +69,14 @@ export default function SignIn() {
               Sign in to pick up where you left off.
             </Text>
           </View>
-
+          <View>
+            {error && (
+              <View style={styles.errorBox}>
+                <Ionicons name="alert-circle" size={18} color="#b84c42" />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            )}
+          </View>
           <View style={styles.form}>
             <Text style={styles.label}>EMAIL ADDRESS</Text>
             <View style={[styles.inputShell, error && styles.inputError]}>
@@ -127,10 +132,10 @@ export default function SignIn() {
               </TouchableOpacity>
             </View>
 
-            {!!error && (
+            {!!apperror && (
               <View style={styles.errorBox}>
                 <Ionicons name="alert-circle" size={18} color="#b84c42" />
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={styles.errorText}>{apperror}</Text>
               </View>
             )}
 
@@ -274,4 +279,12 @@ const styles = StyleSheet.create({
   },
   footerText: { color: "#788780", fontSize: 14 },
   signUp: { color: "#356a53", fontSize: 14, fontWeight: "800", marginLeft: 5 },
+  errorBox: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 1,
+    marginBottom: 8,
+  },
+  errorText: { color: "#b84c42", flex: 1, fontSize: 13, lineHeight: 18 },
 });
