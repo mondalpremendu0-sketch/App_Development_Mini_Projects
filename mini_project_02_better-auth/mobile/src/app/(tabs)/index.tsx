@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../src/hooks/useAuthContext";
+import { useAuth } from "../../hooks/useAuthContext";
 
 export default function Index() {
   const { User } = useAuth();

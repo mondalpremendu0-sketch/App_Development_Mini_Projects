@@ -1,7 +1,7 @@
 import { authClient } from "../lib/auth-client";
 import { AuthContext } from "../contexts/auth-context";
 import { useContext } from "react";
-import { router } from "expo-router";
+
 export const useAuth = () => {
   const { User, setUser, loading, setLoading, error, setError } =
     useContext(AuthContext);
@@ -44,7 +44,6 @@ export const useAuth = () => {
         password,
       });
       setError(response.error?.message);
-      console.log("response", response);
       setUser(response.data);
       return true;
     } catch (error) {

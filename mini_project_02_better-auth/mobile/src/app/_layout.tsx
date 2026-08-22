@@ -1,6 +1,6 @@
-import { AuthContext, AuthProvider } from '@/src/contexts/auth-context';
-import { Stack } from 'expo-router';
-import { useContext } from 'react';
+import { AuthContext, AuthProvider } from "../contexts/auth-context.jsx";
+import { Stack } from "expo-router";
+import { useContext } from "react";
 
 export default function RootLayout() {
   return (

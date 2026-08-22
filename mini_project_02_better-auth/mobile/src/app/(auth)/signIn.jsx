@@ -9,52 +9,40 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../src/hooks/useAuthContext";
+import { useAuth } from "../../hooks/useAuthContext.ts";
 
-export default function SignUp() {
-  const { handleSignUp, loading, error, setError } = useAuth();
-  const [name, setName] = useState("");
+export default function SignIn() {
+  const { handleSignIn, loading, error, setError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [apperror, setappError] = useState("");
 
-  const handleSignup = async () => {
-    const normalizedName = name.trim();
+  const handleLogin = async () => {
     const normalizedEmail = email.trim();
-    if (!normalizedName || !normalizedEmail || !password) {
-      setappError("Complete all fields to create your account.");
+    if (!normalizedEmail || !password) {
+      setError("Enter your email and password to continue.");
       return;
     }
     if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
-      setappError("Enter a valid email address.");
-      return;
-    }
-    if (password.length < 8) {
-      setappError("Use at least 8 characters for your password.");
+      setError("Enter a valid email address.");
       return;
     }
     setappError("");
-    const success = await handleSignUp(
-      normalizedEmail,
-      password,
-      normalizedName,
-    );
+    const success = await handleSignIn(normalizedEmail, password);
     if (success) router.replace("/(tabs)");
     else
       setappError(
-        "We could not create your account. Check your details and try again.",
+        "We could not sign you in. Check your details and try again.",
       );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f5f7f1" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -73,12 +61,12 @@ export default function SignUp() {
           </View>
 
           <View style={styles.headingBlock}>
-            <Text style={styles.eyebrow}>GET STARTED</Text>
+            <Text style={styles.eyebrow}>WELCOME BACK</Text>
             <Text style={styles.title}>
-              Make room for{`\n`}what&apos;s next.
+              Your next chapter{`\n`}starts here.
             </Text>
             <Text style={styles.subtitle}>
-              Create your Nova account in a few seconds.
+              Sign in to pick up where you left off.
             </Text>
           </View>
           <View>
@@ -90,23 +78,6 @@ export default function SignUp() {
             )}
           </View>
           <View style={styles.form}>
-            <Text style={styles.label}>FULL NAME</Text>
-            <View style={[styles.inputShell, error && styles.inputError]}>
-              <Ionicons name="person-outline" size={20} color="#8d9b96" />
-              <TextInput
-                autoCapitalize="words"
-                autoComplete="name"
-                onChangeText={(value) => {
-                  setName(value);
-                  setError("");
-                }}
-                placeholder="Your name"
-                placeholderTextColor="#92a09a"
-                style={styles.input}
-                value={name}
-              />
-            </View>
-
             <Text style={styles.label}>EMAIL ADDRESS</Text>
             <View style={[styles.inputShell, error && styles.inputError]}>
               <Ionicons name="mail-outline" size={20} color="#8d9b96" />
@@ -126,17 +97,22 @@ export default function SignUp() {
               />
             </View>
 
-            <Text style={styles.label}>PASSWORD</Text>
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>PASSWORD</Text>
+              <TouchableOpacity>
+                <Text style={styles.forgot}>Forgot password?</Text>
+              </TouchableOpacity>
+            </View>
             <View style={[styles.inputShell, error && styles.inputError]}>
               <Ionicons name="lock-closed-outline" size={20} color="#8d9b96" />
               <TextInput
                 autoCapitalize="none"
-                autoComplete="new-password"
+                autoComplete="password"
                 onChangeText={(value) => {
                   setPassword(value);
                   setError("");
                 }}
-                placeholder="At least 8 characters"
+                placeholder="Enter your password"
                 placeholderTextColor="#92a09a"
                 secureTextEntry={!showPassword}
                 style={styles.input}
@@ -166,14 +142,14 @@ export default function SignUp() {
             <TouchableOpacity
               accessibilityRole="button"
               disabled={loading}
-              onPress={handleSignup}
+              onPress={handleLogin}
               style={[styles.button, loading && styles.buttonDisabled]}
             >
               {loading ? (
                 <ActivityIndicator color="#10231f" />
               ) : (
                 <>
-                  <Text style={styles.buttonText}>Create account</Text>
+                  <Text style={styles.buttonText}>Continue</Text>
                   <Ionicons name="arrow-forward" size={20} color="#10231f" />
                 </>
               )}
@@ -181,9 +157,9 @@ export default function SignUp() {
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.push("/(auth)/signIn")}>
-              <Text style={styles.signUp}>Sign in</Text>
+            <Text style={styles.footerText}>New to Nova?</Text>
+            <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+              <Text style={styles.signUp}>Create an account</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -237,12 +213,19 @@ const styles = StyleSheet.create({
   },
   subtitle: { color: "#687873", fontSize: 16, lineHeight: 23, marginTop: 14 },
   form: { gap: 12 },
+  labelRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
   label: {
     color: "#50655d",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 1.2,
   },
+  forgot: { color: "#4d7965", fontSize: 12, fontWeight: "700" },
   inputShell: {
     alignItems: "center",
     backgroundColor: "#ffffff",
@@ -296,4 +279,12 @@ const styles = StyleSheet.create({
   },
   footerText: { color: "#788780", fontSize: 14 },
   signUp: { color: "#356a53", fontSize: 14, fontWeight: "800", marginLeft: 5 },
+  errorBox: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 1,
+    marginBottom: 8,
+  },
+  errorText: { color: "#b84c42", flex: 1, fontSize: 13, lineHeight: 18 },
 });
